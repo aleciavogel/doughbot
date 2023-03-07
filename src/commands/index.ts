@@ -1,9 +1,11 @@
 import {Interaction, Client, Collection, Events, REST, Routes} from "discord.js";
 
+import {SlashCommand} from "../types";
+
+// All available commands
 import * as pingCommand from "./ping";
 import * as serverCommand from "./server";
 import * as userCommand from "./user";
-import {SlashCommand} from "../types";
 
 export const COMMANDS: SlashCommand[] = [
   pingCommand,
@@ -17,9 +19,11 @@ for (const command of COMMANDS) {
   CommandCollection.set(command.data?.name, command);
 }
 
-const RegisterCommands = async (client: Client) => {
-  client.commands = CommandCollection;
-
+/**
+ * Listen for commands from the Discord Server
+ * @param client - the target Discord Client
+ */
+const addListener = (client: Client) => {
   // Add the command listener
   client.on(Events.InteractionCreate, async (interaction: Interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -43,14 +47,19 @@ const RegisterCommands = async (client: Client) => {
       }
     }
   });
+}
 
-  // Deploy the commands
+/**
+ * Deploy the commands to the Discord Server
+ * @param client - the target Discord Client
+ */
+const sendToDiscord = async () => {
   const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN ?? "");
 
   try {
     console.log(`Started refreshing ${COMMANDS.length} application (/) commands.`);
 
-    const data = await rest.put(
+    await rest.put(
       Routes.applicationGuildCommands(process.env.CLIENT_ID ?? "", process.env.GUILD_ID ?? ""),
       {
         body: COMMANDS.map(command => command.data.toJSON())
@@ -61,9 +70,17 @@ const RegisterCommands = async (client: Client) => {
   } catch (error: unknown) {
     console.error(error);
   }
-
-
-
 }
 
-export default RegisterCommands;
+/**
+ * Register all commands
+ * @param client - the target Discord Server
+ */
+const registerCommands = async (client: Client) => {
+  client.commands = CommandCollection;
+
+  await addListener(client);
+  await sendToDiscord();
+}
+
+export default registerCommands;
