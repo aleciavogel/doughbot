@@ -2,7 +2,7 @@
   "name": "doughbot",
   "author": "Alecia Vogel <hello@alecia.ca>",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/index.js",
   "license": "MIT",
   "scripts": {
     "start": "yarn run build && node build/index.js",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.14.6",
+    "eslint": "^8.35.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
     "nodemon": "^2.0.21",
