@@ -5,7 +5,13 @@ import {Client, Events, GatewayIntentBits} from "discord.js";
 
 import RegisterCommands from "./commands";
 
+// Ensure all environment variables exist
+const missing = ["DISCORD_TOKEN", "GUILD_ID", "CLIENT_ID"].filter((env) => !process.env[env]);
 
+if (missing.length) {
+  console.error("[ERROR] Missing environment variables:", missing.join(", "));
+  process.exit(1);
+}
 
 // Create a new client instance
 const { Guilds } = GatewayIntentBits;

@@ -5,5 +5,5 @@ export const data: SlashCommandBuilder = new SlashCommandBuilder()
     .setDescription("Replies with pong");
 
 export const execute = async (interaction: ChatInputCommandInteraction<"cached">) => {
-  await interaction.reply("Pong!")
+  await interaction.reply("Pong!");
 }
