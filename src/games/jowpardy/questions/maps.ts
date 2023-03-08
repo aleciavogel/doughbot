@@ -4,7 +4,7 @@ const Maps: QuestionBank = [
   {
     category: QuestionCategory.Maps,
     content: "Inspired by the island of Santorini in the Aegean Sea",
-    answer: "ilios",
+    answer: "Ilios",
     value: 400
   }
 ]

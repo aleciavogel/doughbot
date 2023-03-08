@@ -43,3 +43,9 @@ export const CREATE_GAME = ({ category, content, answer, value }: Question) => `
 export const EXPIRE_GAME = `
 
 `;
+
+export const FETCH_LAST_GAME = `
+  SELECT * FROM jowpardy_games
+    WHERE created_at=(SELECT MAX(created_at) FROM jowpardy_games) 
+    ORDER BY id
+`;

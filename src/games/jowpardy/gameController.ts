@@ -1,11 +1,13 @@
-import { Message, EmbedBuilder } from "discord.js";
+import { Message } from "discord.js";
 
 import Database from "../../db";
 import questions from "./questions";
-import {Question} from "./types";
+import JowpardyDB from "./db";
+import {titleCase} from "../../utils";
 
 export class JowpardyMessageHandler {
   message: Message;
+  countdown?: NodeJS.Timeout;
 
   constructor(message: Message) {
     this.message = message;
@@ -16,10 +18,22 @@ export class JowpardyMessageHandler {
     // Create a new row in the jowpardy_games table
     const question = this.randomQuestion();
 
-    const db = new Database();
-    db.createGame(question);
+    const db = new JowpardyDB();
 
-    await this.message.reply(`The category is **${question.category}** for **$${question.value}**: \n\`${question.content}\``);
+    await db.createGame(question);
+
+    this.message.reply(
+      `The category is **${question.category}** for **$${question.value}**: \n\`\`\`${question.content}\`\`\``
+    ).then((msg: Message) => {
+      this.countdown = setTimeout(async () => {
+        const game: any = await this.checkGameState();
+
+        if (!game.is_closed) {
+          console.log("The game is still open", game)
+          await msg.reply(`Time is up! The answer was \`${question.answer}\`!`);
+        }
+      }, 30000)
+    });
   }
 
   private randomQuestion() {
@@ -30,23 +44,13 @@ export class JowpardyMessageHandler {
     console.log("The leaderboard will be shown here");
   }
 
-  private buildQuestionEmbed({ content, category, value }: Question) {
-    return new EmbedBuilder()
-      .setColor(0x0099FF)
-      .setTitle('jOWpardy')
-      .addFields(
-        { name: `The category is ${category} for $${value}:`, value: content },
-      )
-      .setFooter({ text: 'For rules and how to play, type `/help`' });
-
-  }
-
   private checkAnswer() {
     console.log("Answer has been submitted...");
   }
 
-  private checkGameState() {
-    console.log("We'll check if game is in session here...");
+  async checkGameState() {
+    const db = new JowpardyDB();
+    return await db.fetchLastGame();
   }
 
   /**
@@ -54,13 +58,13 @@ export class JowpardyMessageHandler {
    * just talking/chatting in the channel.
    * @private
    */
-  private parseMessage() {
+  private async parseMessage() {
     switch(this.message.content.toLowerCase()) {
       case "try me":
       case "new game":
       case "next question":
       case "next":
-        this.initGame();
+        await this.initGame();
         break;
 
       case "leaderboard":

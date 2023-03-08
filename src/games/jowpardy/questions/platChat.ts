@@ -4,7 +4,7 @@ const PlatChat: QuestionBank = [
   {
     category: QuestionCategory.PlatChat,
     content: "Sneaking behind enemy lines and attacking from the side or directly in the backline",
-    answer: "flanking",
+    answer: "Flanking",
     value: 100
   }
 ]

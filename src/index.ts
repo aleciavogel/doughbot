@@ -6,6 +6,7 @@ import {Client, Events, GatewayIntentBits} from "discord.js";
 import registerCommands from "./commands";
 import registerGames from "./games";
 import Database from "./db";
+import JowpardyDB from "./games/jowpardy/db";
 
 // Ensure all environment variables exist
 const missing = ["DISCORD_TOKEN", "GUILD_ID", "CLIENT_ID"].filter((env) => !process.env[env]);
@@ -31,7 +32,7 @@ const PERMISSIONS = [
 const client = new Client<true>({ intents: PERMISSIONS });
 
 const main = async () => {
-  const db = new Database();
+  const db = new JowpardyDB();
   db.init();
   await registerCommands(client);
   await registerGames(client);

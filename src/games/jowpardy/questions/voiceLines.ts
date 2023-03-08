@@ -4,7 +4,7 @@ const VoiceLines: QuestionBank = [
   {
     category: QuestionCategory.VoiceLines,
     content: "Sojourn offers a puffy French pastry",
-    answer: "croissant",
+    answer: "Croissant",
     value: 200
   }
 ]

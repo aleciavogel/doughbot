@@ -4,7 +4,7 @@ const FamousStreamers: QuestionBank = [
   {
     category: QuestionCategory.FamousStreamers,
     content: "Three letters",
-    answer: "xqc",
+    answer: "xQc",
     value: 100
   }
 ]

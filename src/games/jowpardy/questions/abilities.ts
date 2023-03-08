@@ -4,7 +4,7 @@ const Abilities: QuestionBank = [
   {
     category: QuestionCategory.Abilities,
     content: "This ultimate ability does more damage to armored enemies than non-armored ones.",
-    answer: "molten core",
+    answer: "Molten Core",
     value: 1000
   }
 ]

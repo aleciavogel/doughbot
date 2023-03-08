@@ -4,7 +4,7 @@ const Counters: QuestionBank = [
   {
     category: QuestionCategory.Counters,
     content: "Zenyatta should think twice about leaving spawn by himself when this character is in play",
-    answer: "sombra",
+    answer: "Sombra",
     value: 400
   }
 ]

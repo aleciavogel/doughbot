@@ -4,7 +4,7 @@ const Nerfs: QuestionBank = [
   {
     category: QuestionCategory.Nerfs,
     content: "The original ultimate ability of Mercy in Overwatch 1",
-    answer: "resurrect",
+    answer: "Resurrect",
     value: 100
   }
 ]

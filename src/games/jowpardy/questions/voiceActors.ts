@@ -4,7 +4,7 @@ const VoiceActors: QuestionBank = [
   {
     category: QuestionCategory.VoiceActors,
     content: "Anjali Bhimani voices this character",
-    answer: "symmetra",
+    answer: "Symmetra",
     value: 100
   }
 ]

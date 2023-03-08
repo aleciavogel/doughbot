@@ -4,7 +4,7 @@ const Collectibles: QuestionBank = [
   {
     category: QuestionCategory.Collectibles,
     content: "This item, resembling Winston's Yeti form, will keep your feet far from frosty.",
-    answer: "slippers",
+    answer: "Slippers",
     value: 100
   }
 ]

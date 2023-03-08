@@ -1,30 +1,43 @@
-import {Connection} from "mysql";
+import {Connection, OkPacket} from "mysql";
 
 import dbConnection from "./connection";
-import { Jowpardy } from "./queries";
-import {Question} from "../games/jowpardy/types";
 
 class Database {
   conn?: Connection;
 
   constructor() {
-    this.conn = dbConnection;
+   this.conn = dbConnection;
   }
 
-  init() {
-    this.query(Jowpardy.INIT_PLAYERS_TABLE);
-    this.query(Jowpardy.INIT_GAMES_TABLE);
-    this.query(Jowpardy.INIT_ANSWERS_TABLE);
+  async find(sql: string) {
+    return new Promise((resolve, reject) => {
+      this.conn?.query(sql, (err, res) => {
+        if (err) {
+          reject(err.message);
+        }
+        resolve(res["0"]);
+      });
+    })
+
   }
 
-  createGame(question: Question) {
-    return this.query(Jowpardy.CREATE_GAME(question));
+  async insert(sql: string) {
+    return new Promise((resolve, reject) => {
+      this.conn?.query(sql, (err, res: OkPacket) => {
+        if (err) {
+          reject(err.message);
+        }
+        resolve(res.insertId);
+      });
+    });
+
   }
 
-  private query(sql: string) {
-    return this.conn?.query(sql, (err) => {
+  exec(sql: string) {
+    this.conn?.query(sql, (err, _res: OkPacket) => {
       if (err) {
-        console.log(err.message);
+        console.error("[ERROR]:", err.message);
+        return;
       }
     });
   }

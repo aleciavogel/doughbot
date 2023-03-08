@@ -4,7 +4,7 @@ const Lore: QuestionBank = [
   {
     category: QuestionCategory.Lore,
     content: "The legal first name of Widowmaker",
-    answer: "amelie",
+    answer: "Amelie",
     value: 200
   }
 ]
