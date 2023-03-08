@@ -16,8 +16,10 @@
     ]
   },
   "dependencies": {
+    "@types/mysql": "^2.15.21",
     "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "@types/node": "^18.14.6",

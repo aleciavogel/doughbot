@@ -6,11 +6,13 @@ import {SlashCommand} from "../types";
 import * as pingCommand from "./ping";
 import * as serverCommand from "./server";
 import * as userCommand from "./user";
+import * as helpCommand from "./help";
 
 export const COMMANDS: SlashCommand[] = [
   pingCommand,
   serverCommand,
-  userCommand
+  userCommand,
+  helpCommand,
 ];
 
 const CommandCollection = new Collection<string, SlashCommand>();
