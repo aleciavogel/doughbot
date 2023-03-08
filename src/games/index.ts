@@ -1,10 +1,10 @@
 import {Client} from "discord.js";
 
-import registerJeopardy from "./overwatch-jeopardy";
+import registerJowpardy from "./jowpardy";
 
 
 const registerGames = async (client: Client) => {
-  await registerJeopardy(client);
+  await registerJowpardy(client);
 }
 
 export default registerGames;

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  database:
+  mysql:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -10,6 +10,9 @@ services:
     restart: always
     ports:
       - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
     volumes:
       - db:/docker-entrypoint-initdb.d/
 volumes:
