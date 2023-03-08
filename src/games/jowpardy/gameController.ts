@@ -1,4 +1,8 @@
-import { Message } from "discord.js";
+import { Message, EmbedBuilder } from "discord.js";
+
+import Database from "../../db";
+import questions from "./questions";
+import {Question} from "./types";
 
 export class JowpardyMessageHandler {
   message: Message;
@@ -8,13 +12,33 @@ export class JowpardyMessageHandler {
     this.parseMessage();
   }
 
-  private initGame() {
+  private async initGame() {
     // Create a new row in the jowpardy_games table
+    const question = this.randomQuestion();
 
+    const db = new Database();
+    db.createGame(question);
+
+    await this.message.reply(`The category is **${question.category}** for **$${question.value}**: \n\`${question.content}\``);
+  }
+
+  private randomQuestion() {
+    return questions[Math.floor(Math.random()*questions.length)];
   }
 
   private showLeaderboard() {
     console.log("The leaderboard will be shown here");
+  }
+
+  private buildQuestionEmbed({ content, category, value }: Question) {
+    return new EmbedBuilder()
+      .setColor(0x0099FF)
+      .setTitle('jOWpardy')
+      .addFields(
+        { name: `The category is ${category} for $${value}:`, value: content },
+      )
+      .setFooter({ text: 'For rules and how to play, type `/help`' });
+
   }
 
   private checkAnswer() {

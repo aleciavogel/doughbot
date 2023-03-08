@@ -1,3 +1,5 @@
+import {Question} from "../../games/jowpardy/types";
+
 export const INIT_PLAYERS_TABLE = `
   CREATE TABLE IF NOT EXISTS jowpardy_players(
     id MEDIUMINT NOT NULL,
@@ -32,8 +34,9 @@ export const CREATE_PLAYER = `
 
 `;
 
-export const CREATE_GAME = `
-
+export const CREATE_GAME = ({ category, content, answer, value }: Question) => `
+  INSERT INTO jowpardy_games(category,question,answer,value) 
+  VALUES("${category}","${content}","${answer}",${value})
 `;
 
 // Update game to indicate that it is closed

@@ -32,6 +32,7 @@ const client = new Client<true>({ intents: PERMISSIONS });
 
 const main = async () => {
   const db = new Database();
+  db.init();
   await registerCommands(client);
   await registerGames(client);
 

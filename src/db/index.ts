@@ -2,45 +2,33 @@ import {Connection} from "mysql";
 
 import dbConnection from "./connection";
 import { Jowpardy } from "./queries";
+import {Question} from "../games/jowpardy/types";
 
 class Database {
   conn?: Connection;
 
   constructor() {
     this.conn = dbConnection;
-    this.init();
   }
 
   init() {
-    if (!this.conn) return;
-
-    const main = this;
-    const db = this.conn;
-
-    db.connect(function(err) {
-      if (err) {
-        return console.error('[ERROR]: ' + err.message);
-      }
-
-      main.transaction(Jowpardy.INIT_PLAYERS_TABLE);
-      main.transaction(Jowpardy.INIT_GAMES_TABLE);
-      main.transaction(Jowpardy.INIT_ANSWERS_TABLE);
-
-      db.end(function (err) {
-        if (err) {
-          return console.log(err.message);
-        }
-      });
-    });
+    this.query(Jowpardy.INIT_PLAYERS_TABLE);
+    this.query(Jowpardy.INIT_GAMES_TABLE);
+    this.query(Jowpardy.INIT_ANSWERS_TABLE);
   }
 
-  private transaction(sql: string) {
-    this.conn?.query(sql, (err) => {
+  createGame(question: Question) {
+    return this.query(Jowpardy.CREATE_GAME(question));
+  }
+
+  private query(sql: string) {
+    return this.conn?.query(sql, (err) => {
       if (err) {
         console.log(err.message);
       }
     });
   }
 }
+
 
 export default Database;
