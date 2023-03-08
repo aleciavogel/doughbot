@@ -39,11 +39,11 @@ export class JowpardyMessageHandler {
     });
   }
 
-  static randomQuestion() {
+  private randomQuestion() {
     return questions[Math.floor(Math.random()*questions.length)];
   }
 
-  static showLeaderboard() {
+  private showLeaderboard() {
     console.log("The leaderboard will be shown here");
   }
 
