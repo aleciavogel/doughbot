@@ -1,9 +1,8 @@
 import { Message } from "discord.js";
 
-import Database from "../../db";
 import questions from "./questions";
 import JowpardyDB from "./db";
-import {titleCase} from "../../utils";
+import {isQuestion, normalizeText} from "../../utils";
 
 export class JowpardyMessageHandler {
   message: Message;
@@ -15,11 +14,15 @@ export class JowpardyMessageHandler {
   }
 
   private async initGame() {
-    // Create a new row in the jowpardy_games table
+    const ongoingGame: any = await this.checkGameState();
+
+    if (ongoingGame && !ongoingGame.is_closed) {
+      await this.message.reply("Just a moment! There's still an active trivia question. Maybe give someone else a chance to answer...");
+      return;
+    }
+
     const question = this.randomQuestion();
-
     const db = new JowpardyDB();
-
     await db.createGame(question);
 
     this.message.reply(
@@ -29,28 +32,99 @@ export class JowpardyMessageHandler {
         const game: any = await this.checkGameState();
 
         if (!game.is_closed) {
-          console.log("The game is still open", game)
           await msg.reply(`Time is up! The answer was \`${question.answer}\`!`);
+          await this.endGame(game.id);
         }
       }, 30000)
     });
   }
 
-  private randomQuestion() {
+  static randomQuestion() {
     return questions[Math.floor(Math.random()*questions.length)];
   }
 
-  private showLeaderboard() {
+  static showLeaderboard() {
     console.log("The leaderboard will be shown here");
   }
 
-  private checkAnswer() {
-    console.log("Answer has been submitted...");
+  private async checkAnswer() {
+    if (this.message.member === null) {
+      await this.message.reply("@kwithpy something has gone horrifically wrong.");
+      return;
+    }
+
+    const game: any = await this.checkGameState();
+
+    if (!game) return;
+
+    if (game.is_closed) return;
+
+    // Check if the player already has submitted a response
+    let newPlayer = await this.checkAnswerState(this.message.member.id, game.id);
+
+    if (!newPlayer) {
+      await this.message.reply("You've already had a chance at answering this one, sorry!");
+      return;
+    }
+
+    if (!isQuestion(this.message.content)) {
+      await this.message.reply("Please answer in the form of a question!");
+      return;
+    }
+
+    const db = new JowpardyDB();
+
+    let isCorrect: boolean = normalizeText(game.answer) === normalizeText(this.message.content);
+    const serverMember = this.message.member;
+    await db.createAnswer(serverMember.id, game.id, isCorrect);
+
+    // Calculate new score
+    let multiplier = isCorrect ? 1 : -1;
+    const player: any = await this.retrievePlayer(serverMember.id);
+    const newScore = player.score + (game.value * multiplier);
+
+    if (isCorrect) {
+      await this.message.reply(`That is the correct answer, ${serverMember.displayName}! Your total score is **$${newScore}**.`);
+      await this.endGame(game.id);
+    } else {
+      await this.message.reply(`Sorry, but that's incorrect. Your total score is now **$${newScore}**.`);
+    }
+
+    await this.updatePlayerScore(serverMember.id, newScore);
   }
 
   async checkGameState() {
     const db = new JowpardyDB();
     return await db.fetchLastGame();
+  }
+
+  async checkAnswerState(memberId: string, gameId: number) {
+    const db = new JowpardyDB();
+    const answers = await db.fetchPreviousAnswers(memberId, gameId);
+    return answers === undefined;
+  }
+
+  async retrievePlayer(memberId: string) {
+    const db = new JowpardyDB();
+    const players = await db.fetchPlayer(memberId);
+
+    if (players === undefined) {
+      // Create new player
+      await db.createPlayer(memberId);
+      return await db.fetchPlayer(memberId);
+    }
+
+    return players;
+  }
+
+  async updatePlayerScore(memberId: string, score: number) {
+    const db = new JowpardyDB();
+    await db.updatePlayerScore(memberId, score);
+  }
+
+  async endGame(gameId: number) {
+    const db = new JowpardyDB();
+    await db.updateGameState(true, gameId);
   }
 
   /**
@@ -79,7 +153,7 @@ export class JowpardyMessageHandler {
         // TODO: check if game is in session
 
         // TODO: if game in session, treat like an answer
-        this.checkAnswer();
+        await this.checkAnswer();
     }
   }
 }
